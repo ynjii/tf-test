@@ -4,7 +4,7 @@ provider "aws" {
 
 # 간단한 EC2 인스턴스 생성
 resource "aws_instance" "test" {
-  ami           = "ami-0c55b159cbfafe1f0"  # Amazon Linux 2 AMI (HVM), SSD Volume Type
+  ami           = "ami-04b3f91ebd5bc4f6d"
   instance_type = "t2.micro"
   
   tags = {
