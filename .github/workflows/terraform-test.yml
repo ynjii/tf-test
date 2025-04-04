@@ -1,5 +1,4 @@
 name: "Terraform Test"
-
 on:
   push:
     branches:
@@ -15,7 +14,6 @@ on:
           - plan
           - apply
           - destroy
-
 jobs:
   terraform:
     name: "Terraform"
@@ -23,56 +21,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Terraform Init
-        id: init
-        run: terraform init
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "us-east-1"  # 필요에 따라 변경
-
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        id: plan
-        if: github.event.inputs.action == 'plan' || github.event_name == 'push'
-        run: terraform plan -no-color
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "us-east-1"  # 필요에 따라 변경
-
-      - name: Terraform Apply
-        id: apply
-        if: github.event.inputs.action == 'apply'
-        run: terraform apply -auto-approve
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "us-east-1"  # 필요에 따라 변경
-
-      - name: Terraform Destroy
-        id: destroy
-        if: github.event.inputs.action == 'destroy'
-        run: terraform destroy -auto-approve
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "us-east-1"  # 필요에 따라 변경
-
-- name: Create Terraform Files if needed
+        
+      - name: Create Terraform Files if needed
         run: |
           if [ ! -f "main.tf" ]; then
             echo 'provider "aws" {
               region = "us-east-1"
             }
-
             resource "aws_instance" "test" {
               ami           = "ami-0c55b159cbfafe1f0"
               instance_type = "t2.micro"
@@ -80,7 +35,6 @@ jobs:
                 Name = "terraform-test-instance"
               }
             }
-
             output "instance_id" {
               value = aws_instance.test.id
             }' > main.tf
@@ -90,3 +44,45 @@ jobs:
           else
             echo "main.tf already exists"
           fi
+          
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"  # 필요에 따라 변경
+          
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        
+      - name: Terraform Plan
+        id: plan
+        if: github.event.inputs.action == 'plan' || github.event_name == 'push'
+        run: terraform plan -no-color
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"  # 필요에 따라 변경
+          
+      - name: Terraform Apply
+        id: apply
+        if: github.event.inputs.action == 'apply'
+        run: terraform apply -auto-approve
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"  # 필요에 따라 변경
+          
+      - name: Terraform Destroy
+        id: destroy
+        if: github.event.inputs.action == 'destroy'
+        run: terraform destroy -auto-approve
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"  # 필요에 따라 변경
