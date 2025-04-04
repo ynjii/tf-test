@@ -29,7 +29,7 @@ jobs:
               region = "ap-northeast-2"
             }
             resource "aws_instance" "test" {
-              ami           = "ami-035233c9da2fabf52"
+              ami           = "ami-04b3f91ebd5bc4f6d"
               instance_type = "t2.micro"
               tags = {
                 Name = "terraform-test-instance"
