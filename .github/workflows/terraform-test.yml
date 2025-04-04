@@ -65,3 +65,28 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "us-east-1"  # 필요에 따라 변경
+
+- name: Create Terraform Files if needed
+        run: |
+          if [ ! -f "main.tf" ]; then
+            echo 'provider "aws" {
+              region = "us-east-1"
+            }
+
+            resource "aws_instance" "test" {
+              ami           = "ami-0c55b159cbfafe1f0"
+              instance_type = "t2.micro"
+              tags = {
+                Name = "terraform-test-instance"
+              }
+            }
+
+            output "instance_id" {
+              value = aws_instance.test.id
+            }' > main.tf
+            
+            echo "Created main.tf file"
+            cat main.tf
+          else
+            echo "main.tf already exists"
+          fi
